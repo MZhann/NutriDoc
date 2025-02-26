@@ -1,13 +1,14 @@
 // pages/index.tsx
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function GoalTopics(): JSX.Element {
   return (
     <main className="min-h-screen mt-4">
       <div className="columns-2 gap-4 sm:columns-3 md:columns-4">
         {/* Card 1 */}
-        <div className="break-inside-avoid mb-4 p-4 bg-[#6CB28E] rounded-xl shadow text-[#FFECCC]">
+        <Link href={'/lose-weight'} className="block  break-inside-avoid mb-4 p-4 bg-[#6CB28E] rounded-xl shadow text-[#FFECCC]">
           <Image
             src={"/assets/images/decoration/lose-weight.svg"}
             width={250}
@@ -18,7 +19,7 @@ export default function GoalTopics(): JSX.Element {
           <h2 className="text-lg font-bold">
             Lose <br /> Weight
           </h2>
-        </div>
+        </Link>
 
         {/* Card 2 */}
         <div className="break-inside-avoid mb-4 bg-[#3F414E] rounded-xl shadow text-white">

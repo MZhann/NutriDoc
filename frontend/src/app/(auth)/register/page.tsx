@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { registerUser } from "@/api/auth";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,12 @@ export default function RegisterPage() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
+  useEffect(() => {
+    if(step < 0){
+      router.push('/greating')
+    }
+  }, [step])
+
   const onSubmit = async (data: FormData) => {
     try {
       // Convert numeric fields from string to number before sending
@@ -100,7 +107,8 @@ export default function RegisterPage() {
   const totalSteps = steps.length;
 
   return (
-    <div className="flex w-full pt-28 justify-center min-h-screen bg-white">
+    <div className="flex w-full pt-28 justify-center min-h-screen bg-white relative z-0">
+      <Image src='/assets/images/decoration/auth-decor.svg' width={430} height={430} className="absolute top-0 left-0 -z-10 rounded-xl" alt="auth page decor"/>
       <Button
         type="button"
         onClick={prevStep}

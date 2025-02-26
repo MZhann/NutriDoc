@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 
 export default function GreatingPage() {
   const router = useRouter();
-//   const { toast } = useToast();
+  // const { toast } = useToast();
 //   const {
 //     register,
 //     handleSubmit,
@@ -78,7 +78,7 @@ export default function GreatingPage() {
         </CardHeader>
         <CardContent className="w-full flex flex-col justify-between">
           <Image
-            src={"/assets/images/decoration/Group.png"}
+            src={"/assets/images/decoration/Group.svg"}
             width={300}
             height={200}
             className="mt-4 ml-4"
@@ -100,7 +100,7 @@ export default function GreatingPage() {
                   Log In
                 </Button>
                 <div className="flex items-center justify-center mt-3 px-4 text-xs text-mylightgray">
-                  ALREADY HAVE AN ACCOUNT? &nbsp;
+                  DON&apos;T HAVE ACCOUNT? &nbsp;
                   <Link
                     href="/register"
                     className="text-blue-500 hover:underline whitespace-nowrap"

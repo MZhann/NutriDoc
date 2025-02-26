@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { loginUser } from "@/api/auth";
 import { Button } from "@/components/ui/button";
@@ -56,7 +57,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-white pt-28">
+    <div className="flex justify-center min-h-screen bg-white pt-28 relative z-0">
+      <Image
+        src="/assets/images/decoration/auth-decor.svg"
+        width={430}
+        height={430}
+        className="absolute top-0 left-0 -z-10 rounded-xl"
+        alt="auth page decor"
+      />
+
       <Card className="w-11/12">
         <CardHeader>
           <CardTitle className="text-xl text-center text-mydarkgray font-bold">
