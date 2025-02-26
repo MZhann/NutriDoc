@@ -5,12 +5,6 @@ import Image from "next/image";
 export default function GoalTopics(): JSX.Element {
   return (
     <main className="min-h-screen mt-4">
-      {/* 
-        columns-2 -> 2 columns on mobile
-        sm:columns-3 -> 3 columns starting at sm (640px)
-        md:columns-4 -> 4 columns at md (768px) and up
-        gap-4 -> spacing between columns
-      */}
       <div className="columns-2 gap-4 sm:columns-3 md:columns-4">
         {/* Card 1 */}
         <div className="break-inside-avoid mb-4 p-4 bg-[#6CB28E] rounded-xl shadow text-[#FFECCC]">
@@ -32,7 +26,7 @@ export default function GoalTopics(): JSX.Element {
             <Image
               src={"/assets/images/decoration/better-sleep.svg"}
               width={250}
-              height={250}
+              height={230}
               className="w-full"
               alt="lose weight"
             />
@@ -41,21 +35,43 @@ export default function GoalTopics(): JSX.Element {
         </div>
 
         {/* Card 3 */}
-        <div className="break-inside-avoid mb-4 p-4 bg-green-200 rounded shadow">
-          <h2 className="text-lg font-bold">Better Sleep</h2>
-          <p>Brief content about improving sleep.</p>
+        <div className="relative z-0 overflow-hidden mb-4 p-4 pb-0 bg-[#8FBBFE] rounded-xl shadow break-inside-avoid">
+          {/* Put the decorative image behind (negative z-index) */}
+          <Image
+            src="/assets/images/decoration/special-diet-decoration.svg"
+            width={250}
+            height={250}
+            alt="Decoration"
+            className="absolute top-20 right-0 w-40 h-40 -z-10"
+          />
+
+          {/* The front image and text can have normal or positive z-index */}
+          <Image
+            src="/assets/images/decoration/special-diet.svg"
+            width={250}
+            height={250}
+            alt="lose weight"
+            className="w-40 h-28 z-10"
+          />
+
+          <h2 className="text-lg font-bold z-20 py-2 pb-4 text-[#FFECCC]">
+            Special <br /> Diet
+          </h2>
         </div>
 
         {/* Card 4 */}
-        <div className="break-inside-avoid mb-4 p-4 bg-yellow-200 rounded shadow">
-          <h2 className="text-lg font-bold">Gain Muscle</h2>
-          <p>Brief content about muscle gain.</p>
-        </div>
+        <div className="break-inside-avoid mb-4 p-4 bg-[#AEEBD9] rounded-xl shadow">
+          <Image
+            src="/assets/images/decoration/gain-muscle.svg"
+            width={300}
+            height={300}
+            alt="lose weight"
+            className="w-40 h-40 z-10"
+          />
 
-        {/* Card 5 (optional) */}
-        <div className="break-inside-avoid mb-4 p-4 bg-purple-200 rounded shadow">
-          <h2 className="text-lg font-bold">Stay Hydrated</h2>
-          <p>Brief content about hydration.</p>
+          <h2 className="text-lg font-bold text-[#3F414E] leading-6">
+            Gain Muscle <br /> Mass
+          </h2>
         </div>
       </div>
     </main>
