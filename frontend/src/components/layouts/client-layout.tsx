@@ -11,7 +11,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // В будущем, страницы которые требуют запуска без сайдбара буду добавлять сюда
   const isNoSidebarPage =
-    /^\/(register|login|better-sleep|forgot-password)$/.test(
+    /^\/(register|login|greating|better-sleep|forgot-password)$/.test(
       pathname
     );
 
