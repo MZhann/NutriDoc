@@ -1,7 +1,6 @@
 import { ClientLayout } from "@/components/layouts/client-layout";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import CookieBanner from "@/components/cookie/cookie-banner";
 
 export default function RootLayout({
   children,
@@ -15,7 +14,6 @@ export default function RootLayout({
       <body>
         <ClientLayout>{children}</ClientLayout>
         <Toaster />
-        <CookieBanner />
       </body>
     </html>
   );

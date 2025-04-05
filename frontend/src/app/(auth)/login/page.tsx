@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,6 +17,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 interface LoginFormData {
   email: string;
@@ -25,6 +27,7 @@ interface LoginFormData {
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -37,6 +40,7 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoginLoading(true);
     try {
       const response = await loginUser(data);
       toast({
@@ -53,6 +57,8 @@ export default function LoginPage() {
         title: "Login Failed",
         description: (error as Error).message,
       });
+    } finally {
+      setIsLoginLoading(false);
     }
   };
 
@@ -117,8 +123,9 @@ export default function LoginPage() {
                   variant="indigo"
                   size="md"
                   className="w-full"
+                  disabled={isLoginLoading}
                 >
-                  Login
+                  {isLoginLoading ? <Loader className="animate-spin text-white"/> : 'Login'}
                 </Button>
                 <div className="flex items-center justify-center mt-3 px-4 text-sm">
                   Don&apos;t have an account? &nbsp;

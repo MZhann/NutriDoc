@@ -19,6 +19,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import Skeleton from "@/components/ui/skeleton";
+import { Loader, LogOut } from "lucide-react";
 
 const Profile = () => {
   const router = useRouter();
@@ -32,7 +34,14 @@ const Profile = () => {
   const [lastName, setLastName] = useState<string>("");
   const [weight, setWeight] = useState<number>(0);
   const [height, setHeight] = useState<number>(0);
+  const [bloodSugar, setBloodSugar] = useState<number>(0);
   const [age, setAge] = useState<number>(0);
+
+  const [totalSessions, setTotalSessions] = useState<number>(0);
+  const [activeSessions, setActiveSessions] = useState<number>(0);
+  const [completedSessions, setCompletedSessions] = useState<number>(0);
+
+  const [loadingProfileData, setLoadingProfileData] = useState<boolean>(true);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -42,11 +51,16 @@ const Profile = () => {
   const [dialogWeight, setDialogWeight] = useState<number>(0);
   const [dialogHeight, setDialogHeight] = useState<number>(0);
   const [dialogAge, setDialogAge] = useState<number>(0);
+  const [dialogBloodSugar, setDialogBloodSugar] = useState<number>(0);
   const [dialogPassword, setDialogPassword] = useState<string>("");
 
+  const [isUpdatingProfileData, setIsUpdatingProfileData] =
+    useState<boolean>(false);
+
   useEffect(() => {
-    console.log('user id is:', id)  //just so wont be build bag
+    console.log("user id is:", id); //just so wont be build bag
     const fetchProfile = async () => {
+      setLoadingProfileData(true);
       try {
         const data = await getCurrentUserProfile();
         // Сохраняем данные в стейт:
@@ -56,9 +70,15 @@ const Profile = () => {
         setLastName(data.last_name);
         setWeight(data.physical_data.weight);
         setHeight(data.physical_data.height);
+        setBloodSugar(data.physical_data.blood_sugar);
+        setActiveSessions(data.statistics.active_sessions);
+        setTotalSessions(data.statistics.total_sessions);
+        setCompletedSessions(data.statistics.completed_sessions);
         setAge(data.physical_data.age);
       } catch (error) {
         console.error("Fetching profile failed", error);
+      } finally {
+        setLoadingProfileData(false);
       }
     };
 
@@ -74,6 +94,7 @@ const Profile = () => {
     setDialogAge(age);
     // password не храним в основном стейте, поэтому оставим пустым или любым значением
     setDialogPassword("");
+    setDialogBloodSugar(bloodSugar);
     setIsDialogOpen(true);
   };
 
@@ -89,11 +110,12 @@ const Profile = () => {
     dialogWeight > 0 &&
     dialogHeight > 0 &&
     dialogAge > 0 &&
+    dialogBloodSugar > 0 &&
     dialogPassword.trim() !== "";
 
   // Отправляем PATCH запрос и обновляем основной стейт
   const handleSaveChanges = async () => {
-
+    setIsUpdatingProfileData(true);
     // Просто проверка на заполненность всех полей
     if (!isFormValid) {
       toast({
@@ -101,8 +123,9 @@ const Profile = () => {
         description: "Please fill all fields before saving",
         variant: "inform",
       });
+      setIsUpdatingProfileData(false);
       return;
-    } 
+    }
 
     try {
       const payload: UpdateUserProfilePayload = {
@@ -114,8 +137,7 @@ const Profile = () => {
           weight: dialogWeight,
           height: dialogHeight,
           age: dialogAge,
-          blood_sugar: 0, // Если нужно, укажите свои значения
-          BMI: 0, // Или вычислите
+          blood_sugar: dialogBloodSugar, // Если нужно, укажите свои значения
         },
       };
 
@@ -140,6 +162,8 @@ const Profile = () => {
       setIsDialogOpen(false);
     } catch (error) {
       console.error("User profile update failed", error);
+    } finally {
+      setIsUpdatingProfileData(false);
     }
   };
 
@@ -156,9 +180,10 @@ const Profile = () => {
         <Button
           onClick={() => handleLogOut()}
           variant={"none"}
-          className="absolute right-0 text-[#A0A3B1]"
+          className="absolute right-0 text-[#A0A3B1] hover:text-myindigo"
         >
-          log out
+          <LogOut className="mr-4 " />
+          {/* log out */}
         </Button>
       </div>
       <div className="mt-2">
@@ -171,10 +196,16 @@ const Profile = () => {
         />
       </div>
       <div className="flex flex-col items-center mt-4 font-bold text-[#A0A3B1] ">
-        <p>
-          {firstName} {lastName}, {age} yo
-        </p>
-        <p>{email}</p>
+        {firstName && lastName && age ? (
+          <p className="text-lg text-myindigo font-bold">
+            {firstName} {lastName}, {age} yo
+          </p>
+        ) : (
+          <Skeleton className="w-40 h-4 mt-1" />
+        )}
+
+        {email ? <p>{email}</p> : <Skeleton className="w-44 h-4 mt-3" />}
+
         <Button
           variant={"none"}
           className="underline font-bold -mt-1 text-myindigo"
@@ -185,13 +216,60 @@ const Profile = () => {
       </div>
 
       <div className="flex w-full justify-between text-[#A0A3B1]">
-        <div>Weight: {weight}kg</div>
-        <div>Sessions: 25</div>
+        {weight ? (
+          <div>
+            Weight: <span className="text-myindigo font-bold">{weight} kg</span>
+          </div>
+        ) : (
+          <Skeleton className="w-4/12 h-4" />
+        )}
+        {!loadingProfileData ? (
+          <div>
+            Sessions:{" "}
+            <span className="text-myindigo font-bold">{totalSessions}</span>
+          </div>
+        ) : (
+          <Skeleton className="w-3/12 h-4" />
+        )}
       </div>
 
       <div className="flex w-full justify-between text-[#A0A3B1]">
-        <div>Height: {height}cm</div>
-        <div>Completed Sessions: 15</div>
+        {height ? (
+          <div>
+            Height: <span className="text-myindigo font-bold">{height} cm</span>
+          </div>
+        ) : (
+          <Skeleton className="w-3/12 h-4 mt-1" />
+        )}
+
+        {loadingProfileData ? (
+          <Skeleton className="w-4/12 h-4 mt-1" />
+        ) : (
+          <div>
+            Completed Sessions:{" "}
+            <span className="text-myindigo font-bold">{completedSessions}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex w-full justify-between text-[#A0A3B1]">
+        {bloodSugar ? (
+          <div>
+            Blood sugar:{" "}
+            <span className="text-myindigo font-bold">{bloodSugar} mg/dL</span>
+          </div>
+        ) : (
+          <Skeleton className="w-4/12 h-4 mt-1" />
+        )}
+
+        {loadingProfileData ? (
+          <Skeleton className="w-3/12 h-4 mt-1" />
+        ) : (
+          <div>
+            Active Sessions:{" "}
+            <span className="text-myindigo font-bold">{activeSessions}</span>
+          </div>
+        )}
       </div>
 
       <div className="w-full mt-10 h-24 bg-[url('/assets/images/decoration/yellowish-bg.svg')] bg-no-repeat bg-cover bg-center rounded-xl flex justify-between items-center p-6  ">
@@ -232,7 +310,9 @@ const Profile = () => {
         {/* Можно использовать DialogTrigger, но мы открываем по onClick, поэтому не дублируем его здесь */}
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-myindigo font-bold">Edit your data</DialogTitle>
+            <DialogTitle className="text-myindigo font-bold">
+              Edit your data
+            </DialogTitle>
             <DialogDescription>
               Update any field you wish to change.
             </DialogDescription>
@@ -298,6 +378,16 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col space-y-2">
+              <Label htmlFor="bloodSugar">Blood sugar</Label>
+              <Input
+                id="bloodSugar"
+                type="number"
+                value={dialogBloodSugar}
+                onChange={(e) => setDialogBloodSugar(Number(e.target.value))}
+              />
+            </div>
+
+            <div className="flex flex-col space-y-2">
               <Label htmlFor="dialogPassword">Password</Label>
               <Input
                 id="dialogPassword"
@@ -309,11 +399,23 @@ const Profile = () => {
           </div>
 
           <DialogFooter className="gap-2">
-            <Button variant="outline" className="rounded-2xl" onClick={handleCloseDialog}>
+            <Button
+              variant="outline"
+              className="rounded-2xl"
+              onClick={handleCloseDialog}
+            >
               Cancel
             </Button>
-            <Button variant={"indigo"} onClick={handleSaveChanges}>
-              Save changes
+            <Button
+              variant={"indigo"}
+              onClick={handleSaveChanges}
+              disabled={isUpdatingProfileData}
+            >
+              {isUpdatingProfileData ? (
+                <Loader className="animate-spin text-white" />
+              ) : (
+                "Save changes"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

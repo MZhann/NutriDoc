@@ -22,7 +22,7 @@ export default function GoalTopics(): JSX.Element {
         </Link>
 
         {/* Card 2 */}
-        <div className="break-inside-avoid mb-4 bg-[#3F414E] rounded-xl shadow text-white">
+        <Link href={"/better-sleep"} className="block break-inside-avoid mb-4 bg-[#3F414E] rounded-xl shadow text-white" >
           <div className="bg-[#4E5567] w-full h-24 flex items-end rounded-t-xl">
             <Image
               src={"/assets/images/decoration/better-sleep.svg"}
@@ -33,7 +33,7 @@ export default function GoalTopics(): JSX.Element {
             />
           </div>
           <h2 className="text-lg font-bold py-6 px-4">Better Sleep</h2>
-        </div>
+        </Link>
 
         {/* Card 3 */}
         <div className="relative z-0 overflow-hidden mb-4 p-4 pb-0 bg-[#8FBBFE] rounded-xl shadow break-inside-avoid">

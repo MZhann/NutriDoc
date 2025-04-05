@@ -8,6 +8,12 @@ export interface ProfileResponse {
     weight: number
     height: number
     age: number
+    blood_sugar: number;
+  }
+  statistics: {
+    total_sessions: number,
+    active_sessions: number,
+    completed_sessions: number,
   }
 }
 
@@ -23,7 +29,6 @@ export interface UpdateUserProfilePayload {
     height: number
     age: number
     blood_sugar: number
-    BMI: number
   }
 }
 
