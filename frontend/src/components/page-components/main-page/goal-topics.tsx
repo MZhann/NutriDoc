@@ -36,7 +36,7 @@ export default function GoalTopics(): JSX.Element {
         </Link>
 
         {/* Card 3 */}
-        <div className="relative z-0 overflow-hidden mb-4 p-4 pb-0 bg-[#8FBBFE] rounded-xl shadow break-inside-avoid">
+        <Link href={'/special-diet'} className="block relative z-0 overflow-hidden mb-4 p-4 pb-0 bg-[#8FBBFE] rounded-xl shadow break-inside-avoid">
           {/* Put the decorative image behind (negative z-index) */}
           <Image
             src="/assets/images/decoration/special-diet-decoration.svg"
@@ -58,10 +58,10 @@ export default function GoalTopics(): JSX.Element {
           <h2 className="text-lg font-bold z-20 py-2 pb-4 text-[#FFECCC]">
             Special <br /> Diet
           </h2>
-        </div>
+        </Link>
 
         {/* Card 4 */}
-        <div className="break-inside-avoid mb-4 p-4 bg-[#AEEBD9] rounded-xl shadow">
+        <Link href={'/gain-mass'} className="block break-inside-avoid mb-4 p-4 bg-[#AEEBD9] rounded-xl shadow">
           <Image
             src="/assets/images/decoration/gain-muscle.svg"
             width={300}
@@ -73,7 +73,7 @@ export default function GoalTopics(): JSX.Element {
           <h2 className="text-lg font-bold text-[#3F414E] leading-6">
             Gain Muscle <br /> Mass
           </h2>
-        </div>
+        </Link>
       </div>
     </main>
   );

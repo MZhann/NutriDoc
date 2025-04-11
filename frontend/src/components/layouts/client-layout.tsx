@@ -18,11 +18,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider store={store}>
-        <div className="min-h-[100vh] md:min-h-min">
+        <div className="min-h-[100vh] md:min-h-min md:flex md:flex-col md:items-center">
           {children}
 
           {!isNoSidebarPage && (
-            <header className="bg-white w-full fixed bottom-0 h-24 flex justify-between px-8 items-center text-mylightgraytext border-t-2">
+            <header className="bg-white w-full md:w-[750px] fixed bottom-0 h-24 flex justify-between px-8 items-center text-mylightgraytext border-t-2">
               <Link href={"/"} className="flex flex-col items-center">
                 <Home
                   className={`size-7 ${

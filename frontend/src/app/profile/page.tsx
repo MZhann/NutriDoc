@@ -174,7 +174,7 @@ const Profile = () => {
   };
 
   return (
-    <section className="w-full min-h-screen flex flex-col items-center pt-20 text-[#3F414E] p-6">
+    <section className="w-full max-w-3xl min-h-screen mb-40 flex flex-col items-center pt-20 text-[#3F414E] p-6">
       <div className="flex w-full items-center justify-center">
         <h1 className="font-bold text-2xl">Profile</h1>
         <Button

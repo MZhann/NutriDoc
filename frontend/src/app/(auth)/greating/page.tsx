@@ -15,50 +15,16 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 
-// interface LoginFormData {
-//   email: string;
-//   password: string;
-// }
 
 export default function GreatingPage() {
   const router = useRouter();
-  // const { toast } = useToast();
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//   } = useForm<LoginFormData>({
-//     defaultValues: {
-//       email: "",
-//       password: "",
-//     },
-//   });
-
-  // const onSubmit = async (data: LoginFormData) => {
-  //   try {
-  //     const response = await loginUser(data);
-  //     toast({
-  //       variant: "success",
-  //       title: "Login Successful",
-  //       description: "You have been logged in successfully!",
-  //     });
-  //     localStorage.setItem("accessToken", response.access_token);
-  //     localStorage.setItem("refreshToken", response.refresh_token);
-  //     router.push("/");
-  //   } catch (error) {
-  //     toast({
-  //       variant: "destructive",
-  //       title: "Login Failed",
-  //       description: (error as Error).message,
-  //     });
-  //   }
-  // };
+ 
 
   return (
     <div className="flex justify-center h-full min-h-screen bg-white">
       <Image
         src="/assets/images/decoration/Frame.png"
-        className="w-full absolute z-0"
+        className="w-full absolute z-0 md:hidden"
         width={300}
         height={300}
         alt="background decoration"
@@ -81,12 +47,12 @@ export default function GreatingPage() {
             src={"/assets/images/decoration/Group.svg"}
             width={300}
             height={200}
-            className="mt-4 ml-4"
+            className="mt-4 ml-4 md:mx-auto md:w-[400px]"
             alt="image vector"
           />
 
           <div>
-            <h1 className="text-xl text-center text-mydarkgray font-bold mt-40">
+            <h1 className="text-xl text-center text-mydarkgray font-bold mt-40 md:mt-6">
               We are what we do
             </h1>
             <p className="text-center text-mylightgray text-sm mt-4">
@@ -94,7 +60,7 @@ export default function GreatingPage() {
               you progresses
             </p>
 
-            <div className="absolute w-full flex justify-center left-0 bottom-8">
+            <div className="absolute md:static w-full flex md:mt-10 justify-center left-0 bottom-8">
               <div className="flex flex-col w-10/12">
                 <Button variant={"indigo"} onClick={() => router.push('/login')} size={"md"} className="w-full">
                   Log In

@@ -7,12 +7,13 @@ import { Suspense } from "react";
 
 const LoseWeight = () => {
   return (
-    <div className="relative z-0">
+    <div className="relative z-0  w-full max-w-3xl">
+      
       <Image
         src={"/assets/images/decoration/special-diet-shapka.svg"}
         width={460}
         height={200}
-        className="w-screen"
+        className="w-screen  md:w-full md:h-64 md:object-cover md:object-bottom"
         alt="header lose weight"
       />
       <Link

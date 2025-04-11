@@ -70,7 +70,7 @@ const Monitoring = () => {
   };
 
   return (
-    <section className="w-full min-h-screen flex flex-col items-center pt-20 text-[#3F414E] p-6">
+    <section className="w-full max-w-3xl mb-40 min-h-screen flex flex-col items-center pt-20 text-[#3F414E] p-6">
       <h1 className="font-bold text-2xl">Monitoring</h1>
       <p className="text-center text-[#A0A3B1] mt-4">
         You can see the sessions that are going on and update them with your progress
