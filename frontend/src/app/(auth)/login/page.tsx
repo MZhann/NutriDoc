@@ -63,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-white pt-28 relative z-0">
+    <div className="flex w-full min-w-xl justify-center min-h-screen bg-white pt-28 relative z-0">
       <Image
         src="/assets/images/decoration/auth-decor.svg"
         width={430}

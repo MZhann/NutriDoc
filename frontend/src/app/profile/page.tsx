@@ -1,12 +1,16 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getCurrentUserProfile, updateUserProfile } from "@/api/user";
-import { UpdateUserProfilePayload } from "@/types/userTypes";
-
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { Loader, LogOut } from "lucide-react";
+
+import { useToast } from "@/hooks/use-toast";
+import { getCurrentUserProfile, updateUserProfile } from "@/api/user";
+import { backendApiInstance } from "@/api";
+import { SessionItem } from "@/types/sessionsTypes";
+import { UpdateUserProfilePayload } from "@/types/userTypes";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,15 +24,24 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import Skeleton from "@/components/ui/skeleton";
-import { Loader, LogOut } from "lucide-react";
+
+// Маппинг категории -> страница (копируем из Monitoring)
+const CATEGORY_PAGES: Record<string, string> = {
+  "67ed69cf17e510a5099dcfc0": "/lose-weight",
+  "67ed69ba17e510a5099dcfbf": "/gain-mass",
+  "67efd34b17e510a5099dcfc3": "/better-sleep",
+  "67f0695717e510a5099dd036": "/special-diet",
+};
 
 const Profile = () => {
   const router = useRouter();
   const { toast } = useToast();
 
+  // ------------------ Стейт для профиля пользователя ------------------
   const [refetch, setRefetch] = useState<boolean>(false);
-  //user's data
-  const [id, setId] = useState<string>("");
+
+  // Основные данные
+  // const [id, setId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -37,14 +50,22 @@ const Profile = () => {
   const [bloodSugar, setBloodSugar] = useState<number>(0);
   const [age, setAge] = useState<number>(0);
 
+  // Статистика
   const [totalSessions, setTotalSessions] = useState<number>(0);
-  const [activeSessions, setActiveSessions] = useState<number>(0);
+  const [activeSessionsCount, setActiveSessionsCount] = useState<number>(0);
   const [completedSessions, setCompletedSessions] = useState<number>(0);
 
+  // Загрузка
   const [loadingProfileData, setLoadingProfileData] = useState<boolean>(true);
 
+  // ------------------ Стейт + логика для активных сессий ------------------
+  const [activeSessions, setActiveSessions] = useState<SessionItem[]>([]);
+  const [loadingActiveSessions, setLoadingActiveSessions] = useState<boolean>(true);
+
+  // ------------------ Диалоговое окно редактирования профиля ------------------
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // Поля, которые будут редактироваться
   const [dialogFirstName, setDialogFirstName] = useState<string>("");
   const [dialogLastName, setDialogLastName] = useState<string>("");
   const [dialogEmail, setDialogEmail] = useState<string>("");
@@ -57,21 +78,20 @@ const Profile = () => {
   const [isUpdatingProfileData, setIsUpdatingProfileData] =
     useState<boolean>(false);
 
+  // ------------------ Получение профиля пользователя ------------------
   useEffect(() => {
-    console.log("user id is:", id); //just so wont be build bag
     const fetchProfile = async () => {
       setLoadingProfileData(true);
       try {
         const data = await getCurrentUserProfile();
-        // Сохраняем данные в стейт:
-        setId(data.id);
+        // setId(data.id);
         setEmail(data.email);
         setFirstName(data.first_name);
         setLastName(data.last_name);
         setWeight(data.physical_data.weight);
         setHeight(data.physical_data.height);
         setBloodSugar(data.physical_data.blood_sugar);
-        setActiveSessions(data.statistics.active_sessions);
+        setActiveSessionsCount(data.statistics.active_sessions);
         setTotalSessions(data.statistics.total_sessions);
         setCompletedSessions(data.statistics.completed_sessions);
         setAge(data.physical_data.age);
@@ -85,6 +105,40 @@ const Profile = () => {
     fetchProfile();
   }, [refetch]);
 
+  // ------------------ Получение списка активных сессий ------------------
+  useEffect(() => {
+    const fetchActiveSessions = async () => {
+      setLoadingActiveSessions(true);
+      try {
+        const res = await backendApiInstance.get<SessionItem[]>(
+          "/session/get?status=active"
+        );
+        setActiveSessions(res.data);
+      } catch (error) {
+        console.error("Failed to fetch active sessions", error);
+      } finally {
+        setLoadingActiveSessions(false);
+      }
+    };
+
+    fetchActiveSessions();
+  }, []);
+
+  // ------------------ Форматирование даты как в Monitoring ------------------
+  const formatDate = (date: string | null | undefined): string => {
+    if (!date) return "Unknown date";
+    const d = new Date(date);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  // ------------------ Переход к странице выбранной сессии ------------------
+  const handleCardClick = (session: SessionItem) => {
+    const page = CATEGORY_PAGES[session.category_id];
+    if (!page) return alert("Unknown session category");
+    router.push(`${page}?sessionId=${session._id}`);
+  };
+
+  // ------------------ Диалог (редактировать профиль) ------------------
   const handleOpenDialog = () => {
     setDialogFirstName(firstName);
     setDialogLastName(lastName);
@@ -92,9 +146,8 @@ const Profile = () => {
     setDialogWeight(weight);
     setDialogHeight(height);
     setDialogAge(age);
-    // password не храним в основном стейте, поэтому оставим пустым или любым значением
-    setDialogPassword("");
     setDialogBloodSugar(bloodSugar);
+    setDialogPassword("");
     setIsDialogOpen(true);
   };
 
@@ -102,7 +155,6 @@ const Profile = () => {
     setIsDialogOpen(false);
   };
 
-  // For Checking if the  form is valid (all required fields are filled)
   const isFormValid =
     dialogFirstName.trim() !== "" &&
     dialogLastName.trim() !== "" &&
@@ -113,10 +165,8 @@ const Profile = () => {
     dialogBloodSugar > 0 &&
     dialogPassword.trim() !== "";
 
-  // Отправляем PATCH запрос и обновляем основной стейт
   const handleSaveChanges = async () => {
     setIsUpdatingProfileData(true);
-    // Просто проверка на заполненность всех полей
     if (!isFormValid) {
       toast({
         title: "Warning",
@@ -132,16 +182,15 @@ const Profile = () => {
         first_name: dialogFirstName,
         last_name: dialogLastName,
         email: dialogEmail,
-        password: dialogPassword, // Передаём, если хотите менять пароль
+        password: dialogPassword,
         physical_data: {
           weight: dialogWeight,
           height: dialogHeight,
           age: dialogAge,
-          blood_sugar: dialogBloodSugar, // Если нужно, укажите свои значения
+          blood_sugar: dialogBloodSugar,
         },
       };
 
-      // Делаем PATCH запрос к вашему эндпоинту
       const updatedData = await updateUserProfile(payload);
 
       toast({
@@ -151,14 +200,11 @@ const Profile = () => {
       });
       setRefetch(!refetch);
 
-      // Обновляем локальный стейт по факту сохранения
+      // Обновляем локальный стейт (если нужно)
       setFirstName(updatedData.first_name);
       setLastName(updatedData.last_name);
       setEmail(updatedData.email);
-      // В ответе нет физ. параметров (возвращается лишь physical_data_id).
-      // Если бекенд придаст вам обновлённые weight, height, age — обновите их аналогично.
 
-      // Закрываем диалог
       setIsDialogOpen(false);
     } catch (error) {
       console.error("User profile update failed", error);
@@ -167,6 +213,7 @@ const Profile = () => {
     }
   };
 
+  // ------------------ Выход из аккаунта ------------------
   const handleLogOut = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -183,9 +230,9 @@ const Profile = () => {
           className="absolute right-0 text-[#A0A3B1] hover:text-myindigo"
         >
           <LogOut className="mr-4 " />
-          {/* log out */}
         </Button>
       </div>
+
       <div className="mt-2">
         <Image
           src="/assets/images/decoration/avatar.png"
@@ -195,6 +242,8 @@ const Profile = () => {
           alt="avatar"
         />
       </div>
+
+      {/* Основная информация о пользователе */}
       <div className="flex flex-col items-center mt-4 font-bold text-[#A0A3B1] ">
         {firstName && lastName && age ? (
           <p className="text-lg text-myindigo font-bold">
@@ -215,6 +264,7 @@ const Profile = () => {
         </Button>
       </div>
 
+      {/* Показатели */}
       <div className="flex w-full justify-between text-[#A0A3B1]">
         {weight ? (
           <div>
@@ -267,48 +317,47 @@ const Profile = () => {
         ) : (
           <div>
             Active Sessions:{" "}
-            <span className="text-myindigo font-bold">{activeSessions}</span>
+            <span className="text-myindigo font-bold">{activeSessionsCount}</span>
           </div>
         )}
       </div>
 
-      <div className="w-full mt-10 h-24 bg-[url('/assets/images/decoration/yellowish-bg.svg')] bg-no-repeat bg-cover bg-center rounded-xl flex justify-between items-center p-6  ">
-        <div>
-          <p className="text-lg font-bold">Lose weight</p>
-          <div className="flex flex-col text-sm text-[#5A6175]">
-            <span>GOAL: 58 kg</span>
-            <span>APR 30</span>
-          </div>
-        </div>
-        <div className="text-lg font-bold text-[#5A6175]">In progress</div>
-      </div>
-
-      <div className="w-full mt-4 h-24 bg-[url('/assets/images/decoration/yellowish-bg.svg')] bg-no-repeat bg-cover bg-center rounded-xl flex justify-between items-center p-6  ">
-        <div>
-          <p className="text-lg font-bold">Lose weight</p>
-          <div className="flex flex-col text-sm text-[#5A6175]">
-            <span>GOAL: 58 kg</span>
-            <span>APR 30</span>
-          </div>
-        </div>
-        <div className="text-lg font-bold text-[#5A6175]">In progress</div>
-      </div>
-
-      <div className="w-full mt-4 h-24 bg-[url('/assets/images/decoration/yellowish-bg.svg')] bg-no-repeat bg-cover bg-center rounded-xl flex justify-between items-center p-6  ">
-        <div>
-          <p className="text-lg font-bold">Lose weight</p>
-          <div className="flex flex-col text-sm text-[#5A6175]">
-            <span>GOAL: 58 kg</span>
-            <span>APR 30</span>
-          </div>
-        </div>
-        <div className="text-lg font-bold text-[#5A6175]">In progress</div>
+      {/* Вместо статичной карточки — список активных сессий */}
+      <div className="w-full mt-10">
+        <h2 className="text-[#A0A3B1] uppercase text-xs font-semibold mb-2">
+          Active Sessions
+        </h2>
+        {loadingActiveSessions ? (
+          <p className="mt-4 text-sm text-[#A0A3B1]">Loading sessions...</p>
+        ) : activeSessions.length === 0 ? (
+          <p className="text-sm text-[#CBD0E0] italic">
+            No active sessions
+          </p>
+        ) : (
+          activeSessions.map((session) => (
+            <div
+              key={session._id}
+              onClick={() => handleCardClick(session)}
+              className="cursor-pointer w-full mt-4 h-24 bg-[url('/assets/images/decoration/yellowish-bg.svg')] bg-no-repeat bg-cover bg-center rounded-xl flex justify-between items-center p-6 transition hover:opacity-90"
+            >
+              <div>
+                <p className="text-lg font-bold">{session.goal || "Session"}</p>
+                <div className="flex flex-col text-sm text-[#5A6175]">
+                  <span>{formatDate(session.session_start)}</span>
+                </div>
+              </div>
+              <div className="text-lg font-bold text-[#5A6175]">
+                {/* Можно выводить status или иной статус */}
+                In progress
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Диалоговое окно для редактирования */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        {/* Можно использовать DialogTrigger, но мы открываем по onClick, поэтому не дублируем его здесь */}
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px] overflow-y-scroll h-[90dvh]">
           <DialogHeader>
             <DialogTitle className="text-myindigo font-bold">
               Edit your data
@@ -378,9 +427,9 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col space-y-2">
-              <Label htmlFor="bloodSugar">Blood sugar</Label>
+              <Label htmlFor="dialogBloodSugar">Blood sugar</Label>
               <Input
-                id="bloodSugar"
+                id="dialogBloodSugar"
                 type="number"
                 value={dialogBloodSugar}
                 onChange={(e) => setDialogBloodSugar(Number(e.target.value))}
