@@ -29,6 +29,9 @@ interface FormData {
   blood_sugar: number;
   email: string;
   password: string;
+  chronic_diseases: string;
+  activity_level: string;
+  gender: string;
   privacyPolicyAccepted: boolean;
 }
 
@@ -49,6 +52,9 @@ export default function RegisterPage() {
       weight: 0,
       height: 0,
       blood_sugar: 0,
+      chronic_diseases: "",
+      activity_level: "",
+      gender: "",
       email: "",
       password: "",
       privacyPolicyAccepted: false,
@@ -77,6 +83,9 @@ export default function RegisterPage() {
           height: Number(data.height),
           age: Number(data.age),
           blood_sugar: Number(data.blood_sugar),
+          chronic_diseases: data.chronic_diseases,
+          activity_level: data.activity_level,
+          gender: data.gender,
         },
       };
 
@@ -102,6 +111,7 @@ export default function RegisterPage() {
     "Personal Info",
     "Physical Data",
     "Blood Sugar",
+    "Lifestyle",
     "Account Details",
   ];
   const totalSteps = steps.length;
@@ -252,7 +262,44 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {step === 3 && (
+        {step === 3 && (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="chronic_diseases" className="text-mylightgray pl-1">
+                Chronic diseases
+              </Label>
+              <Input
+                id="chronic_diseases"
+                placeholder="e.g. Allergies to mushrooms"
+                {...register("chronic_diseases")}
+              />
+              {errors.chronic_diseases && <p className="text-sm text-red-500">{errors.chronic_diseases.message}</p>}
+            </div>
+            <div>
+              <Label htmlFor="activity_level" className="text-mylightgray pl-1">
+                Activity level
+              </Label>
+              <Input
+                id="activity_level"
+                placeholder="e.g. Very high"
+                {...register("activity_level")}
+              />
+              {errors.activity_level && <p className="text-sm text-red-500">{errors.activity_level.message}</p>}
+            </div>
+            <div>
+              <Label htmlFor="gender" className="text-mylightgray pl-1">
+                Gender
+              </Label>
+              <Input
+                id="gender"
+                placeholder="male / female / other"
+                {...register("gender")}
+              />
+              {errors.gender && <p className="text-sm text-red-500">{errors.gender.message}</p>}
+            </div>
+          </div>
+        )}
+            {step === 4 && (
               <div className="space-y-4">
                 {/* Step 3: Account Details */}
                 <div>

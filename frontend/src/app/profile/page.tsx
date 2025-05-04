@@ -49,6 +49,9 @@ const Profile = () => {
   const [height, setHeight] = useState<number>(0);
   const [bloodSugar, setBloodSugar] = useState<number>(0);
   const [age, setAge] = useState<number>(0);
+  const [activityLevel, setActivityLevel] = useState("");
+  const [chronicDiseases, setChronicDiseases] = useState("");
+  const [gender, setGender] = useState("");
 
   // Статистика
   const [totalSessions, setTotalSessions] = useState<number>(0);
@@ -74,6 +77,9 @@ const Profile = () => {
   const [dialogAge, setDialogAge] = useState<number>(0);
   const [dialogBloodSugar, setDialogBloodSugar] = useState<number>(0);
   const [dialogPassword, setDialogPassword] = useState<string>("");
+  const [dialogActivityLevel, setDialogActivityLevel] = useState("");
+  const [dialogChronicDiseases, setDialogChronicDiseases] = useState("");
+  const [dialogGender, setDialogGender] = useState("");
 
   const [isUpdatingProfileData, setIsUpdatingProfileData] =
     useState<boolean>(false);
@@ -95,6 +101,9 @@ const Profile = () => {
         setTotalSessions(data.statistics.total_sessions);
         setCompletedSessions(data.statistics.completed_sessions);
         setAge(data.physical_data.age);
+        setActivityLevel(data.physical_data.activity_level);
+        setChronicDiseases(data.physical_data.chronic_diseases);
+        setGender(data.physical_data.gender);
       } catch (error) {
         console.error("Fetching profile failed", error);
       } finally {
@@ -148,7 +157,11 @@ const Profile = () => {
     setDialogAge(age);
     setDialogBloodSugar(bloodSugar);
     setDialogPassword("");
+    setDialogActivityLevel(activityLevel);
+    setDialogChronicDiseases(chronicDiseases);
+    setDialogGender(gender);
     setIsDialogOpen(true);
+
   };
 
   const handleCloseDialog = () => {
@@ -162,6 +175,9 @@ const Profile = () => {
     dialogWeight > 0 &&
     dialogHeight > 0 &&
     dialogAge > 0 &&
+    dialogBloodSugar >= 0 &&
+    dialogActivityLevel.trim() !== "" &&
+    dialogChronicDiseases.trim() !== "" &&
     dialogBloodSugar > 0 &&
     dialogPassword.trim() !== "";
 
@@ -188,6 +204,9 @@ const Profile = () => {
           height: dialogHeight,
           age: dialogAge,
           blood_sugar: dialogBloodSugar,
+          activity_level: dialogActivityLevel,
+          chronic_diseases: dialogChronicDiseases,
+          gender: dialogGender,
         },
       };
 
@@ -319,6 +338,35 @@ const Profile = () => {
             Active Sessions:{" "}
             <span className="text-myindigo font-bold">{activeSessionsCount}</span>
           </div>
+        )}
+      </div>
+      <div className="flex w-full justify-between text-[#A0A3B1] mt-4">
+        {gender ? (
+          <div>
+            Gender: <span className="text-myindigo font-bold">{gender}</span>
+          </div>
+        ) : (
+          <Skeleton className="w-4/12 h-4" />
+        )}
+
+        {chronicDiseases ? (
+          <div>
+            Chronic Diseases:{" "}
+            <span className="text-myindigo font-bold">{chronicDiseases}</span>
+          </div>
+        ) : (
+          <Skeleton className="w-4/12 h-4" />
+        )}
+      </div>
+
+      <div className="flex w-full justify-between text-[#A0A3B1] mt-1">
+        {activityLevel ? (
+          <div>
+            Activity Level:{" "}
+            <span className="text-myindigo font-bold">{activityLevel}</span>
+          </div>
+        ) : (
+          <Skeleton className="w-4/12 h-4" />
         )}
       </div>
 

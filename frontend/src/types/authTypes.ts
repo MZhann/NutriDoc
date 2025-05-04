@@ -3,6 +3,9 @@ export interface PhysicalData {
   height: number;
   age: number;
   blood_sugar: number;
+  chronic_diseases: string;
+  activity_level: string;
+  gender: string;
 }
 
 export interface RegisterPayload {
